@@ -1,0 +1,8 @@
+*.bmp
+*.png
+*.txt
+*.classpath
+*.project
+
+/bin
+/.settings
