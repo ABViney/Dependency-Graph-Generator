@@ -90,7 +90,6 @@ public class TBoxPathing {
 			}
 		}
 		
-		int depCount = 1;
 		boolean isAside = false;
 		boolean sameLayer = false;
 		BiPredicate<Integer[], Integer[]> adjacentSeqBreak = new BiPredicate<>() { // evalute if pathing from start to end is a single vector
@@ -101,8 +100,8 @@ public class TBoxPathing {
 								if(field[start[1]][start[0]-1] == null) return true; // element to the left of start is empty
 								return false;
 							}
-							int offsetX = end[0]-start[0]; // x difference between end and start
-							if(offsetX*offsetX == 1) return true; // start and end are adjacent
+//							int offsetX = end[0]-start[0]; // x difference between end and start
+//							if(offsetX*offsetX == 1) return true; // start and end are adjacent -- Blocked as keying between two x-axis adjacent nodes not currently possible
 							return false;
 						}
 						if(start[0] == end[0]) {
@@ -132,7 +131,7 @@ public class TBoxPathing {
 					pathSet.add(path);
 					continue;
 				}
-				path.add(vecRef[y++][x]);// Takeoff point
+				path.add(vecRef[++y][x]);// Takeoff point
 				if(sameLayer) { // 4 points
 					path.add(vecRef[y--][x=end[0]]);
 					path.add(vecRef[y][x]);
