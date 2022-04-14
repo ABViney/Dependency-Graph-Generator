@@ -86,7 +86,7 @@ public class LinkedPath {
 					
 					List<PathInstance[][]> valRef = vectors.get(i).getValue();
 					
-					PathInstance[][][] channelBundle = valRef.toArray(new PathInstance[vectors.get(i).getValue().get(0).length][2][]);
+					PathInstance[][][] channelBundle = valRef.toArray(new PathInstance[vectors.get(i).getValue().get(0).length][2][cd]);
 				}
 				
 			}
