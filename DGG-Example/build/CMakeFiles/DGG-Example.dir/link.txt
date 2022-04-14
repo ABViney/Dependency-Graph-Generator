@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/DGG-Example.dir/DGG-Example.cpp.o CMakeFiles/DGG-Example.dir/src/SimpleObject.cpp.o CMakeFiles/DGG-Example.dir/src/SimplerObject.cxx.o  -o DGG-Example 

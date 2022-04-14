@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/viney/vs-code/projects/cpp/DGG-Example/include/SimpleObject.h
+
+/home/viney/vs-code/projects/cpp/DGG-Example/src/SimpleObject.cpp
+../include/SimpleObject.h
+/home/viney/vs-code/projects/cpp/DGG-Example/include/SimpleObject.h
+

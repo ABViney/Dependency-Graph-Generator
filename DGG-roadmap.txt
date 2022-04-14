@@ -1,0 +1,44 @@
+App Development Path:
+	Recursively read targeted directory noting all relative specified filetypes to array
+	Iterate array and read each file for dependencies, noting found links in sub array
+		Note: approach should allow all files to be iterated once with no recursive follows, as all files will have the same process.
+		TODO: Links (any URL) seperate from standard import procedures should be captured in a secondary array, as these may be outbound tasks or calls that aren't
+			reflected in the import chain
+	Single linked list data type to link from top level to dependency for each file. Algo to parse after fact to determine root files not depended on
+	Use Processing import to generate image file detailing tree-style map of all dependencies from top to library levels
+		Should also identify files with no involvment
+	Data from processing will provide image coordinates of the origin of each file, as well as the size of such. Use data to generate array of anchor link references.
+	
+Refactor Targets:
+	Verify child assignment in DirLoader -- currently appears to assign all adjacents to the last occurrence in the directory
+	Reimplement DualLinkTree to allow better maneuverability to known branches, passing a equal functional interface or something
+		Implement a deep clone method. 
+	Expand Config object to further encapsulate the ideals of a final product. Refactor DirLoader to accept a Config object to enable non static returns of the target filetree
+	
+	
+Progress Report:
+	DirLoader child assignment issue was a bug in the printing implementation.
+	DirLoader deprecated, new FileTree object provides more reliable accounting and traversal.
+	FileTree impl assures DualLinkTree deep clone no longer needed.
+	
+	DualLinkTree at current does not need an update.
+	
+	
+	Group object removed. Record object being refactored to fulfill gap.
+	
+	Current roadmap
+	FileTree loads target directory hierarchy into tree base format with head file at root.
+	FileTree methods enable disabling and re-enabling of branches in directory.
+	FileTree getFileList() method flattens all non-directory files into an accessible array. Construct is determined by recursively iterating
+		from the root to all ENABLED child nodes. A disabled directory ensure all child Nodes of that directory do not show up. A disabled file ensures
+		it does not show up.
+		
+GET:\B#include\s*((<.+>)|(".+"))
+THEN:((".+")|(<.+>))
+THEN:[^"<>\s]+
+THEN:[^\/]+$
+SAVE:USE
+
+
+	
+	

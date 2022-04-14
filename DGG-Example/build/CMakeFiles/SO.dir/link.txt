@@ -1,0 +1,2 @@
+/usr/bin/ar qc libSO.a  CMakeFiles/SO.dir/src/SimpleObject.cpp.o CMakeFiles/SO.dir/src/SimplerObject.cxx.o
+/usr/bin/ranlib libSO.a

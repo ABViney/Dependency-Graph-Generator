@@ -1,0 +1,44 @@
+DependencyGraphGenerator -- Todo List
+-------------------------------------
+Point to file/directory encapsulating target					--Done
+Generate mutable File Tree that can flatten files to collection			--Done
+Data type to resolve a file into measurable components(Record.java)		--Done
+PatternMatching operation implemented to capture measurable components		--Done
+Reference Tree collection to point to and from positions			--Done
+Linked List (Layer) collection to denote dependency hierarchy			--Done
+(Refactoring
+	Abstraction of Record datatype(AbstractRecord.java)
+	Creation of FauxRecord datatype
+	ReferenceTree utilized in identifying non-file references
+	Non-file references generated into FauxRecords
+	All records reintegrated into new Tree under AbstractRecord
+	New tree retains all pointers to references in prior tree
+	Tree provides root(s) definition by predicate
+ end)
+Initial blocking of Graphic developed from Layer collection			--Done
+Blocking provides relevant pathing information for linking positions		--Done
+  -- Performance at this point utilizing a project of 500+ files -- ~2seconds
+
+Abstract object type representing cells(or chunks) in Graphic			--Done
+Abstract cells extended into empty, node, and path cells			--Done
+Bitmap object type creates file header and manages byte allocation		--Done
+  -- Writing projected sizes infers significant performance loss when
+	writing linear-only
+Color to byte array object -- current limitation (only 24bits/pixel)		--Done
+Cells generate their draw data by line						--In-progress
+Path datatype infers its color data from a Node cell				--Done
+Path class instantiates Path cells where expected				--Done
+Path class defines path flow for each path to it's destination			--In-progress
+
+Next Steps:
+BitMap method to pass a (2D) array of offsets for individual write calls
+BitMap generated from CellSheet converted to PNG for editing
+PNG scaled to reasonable size, Graphics2D instantiated on PNG reference
+CellSheet data used to apply Node titles and final product beautificiation
+Provide offset functionality to BitMap class to enable multithreaded
+  writing of multiple cells if performance bottlenecks prove cumbersome.
+Refactor Color class to enable 16-bit writing for alpha channels, delegate
+  final color pallete to after PNG conversion. Enable realtime editing via
+  mapping of bitmap colors to PNG alternatives.
+
+

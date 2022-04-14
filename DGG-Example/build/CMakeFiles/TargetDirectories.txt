@@ -1,0 +1,3 @@
+/home/viney/vs-code/projects/cpp/DGG-Example/build/CMakeFiles/rebuild_cache.dir
+/home/viney/vs-code/projects/cpp/DGG-Example/build/CMakeFiles/edit_cache.dir
+/home/viney/vs-code/projects/cpp/DGG-Example/build/CMakeFiles/DGG-Example.dir
