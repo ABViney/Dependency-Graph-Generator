@@ -66,17 +66,17 @@ public class Vec2 {
 		if(r.x == 0) {
 			switch(r.y >>> 31) {
 			case 0:
-				return Direction.LEFT;
+				return Direction.UP;
 			case 1:
-				return Direction.RIGHT;
+				return Direction.DOWN;
 			}
 		}
 		if(r.y == 0) {
 			switch(r.x >>> 31) {
 			case 0:
-				return Direction.UP;
+				return Direction.LEFT;
 			case 1:
-				return Direction.DOWN;
+				return Direction.RIGHT;
 			}
 		} return Direction.TANGEANT;
 	}
@@ -90,16 +90,18 @@ public class Vec2 {
 	public static Vec2 fromDirection(Direction d) {
 		switch(d) {
 		case UP:
-			return new Vec2(0, 1);
-		case DOWN:
 			return new Vec2(0, -1);
+		case DOWN:
+			return new Vec2(0, 1);
 		case LEFT:
 			return new Vec2(-1, 0);
 		case RIGHT:
 			return new Vec2(1, 0);
 		case SAME:
 			return new Vec2(0, 0);
-		} return null;
+		default:
+			return null;
+		}
 	}
 	
 }

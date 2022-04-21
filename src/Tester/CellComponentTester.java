@@ -1,16 +1,19 @@
 package Tester;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
-import javax.imageio.ImageIO;
-
+import com.cell.EmptyCellComponent;
+import com.cell.LinkedPath.PathInstance;
+import com.cell.NodeCellComponent;
+import com.cell.PathCellComponent;
+import com.directional.Direction;
+import com.util.ByteGenerator;
 import com.vindig.image.Bitmap;
 import com.vindig.image.Color;
+import com.vindig.manager.GraphManager;
 
 public class CellComponentTester {
 	
@@ -53,11 +56,12 @@ public class CellComponentTester {
 //			}
 //		}
 		
-		Bitmap bmp = new Bitmap(w, h, bits);
+//		Bitmap bmp = new Bitmap(w, h, bits);
 		
 //		Color c = new Color(0f,0f,0f);
-		Color blu = new Color(0.f,0.f,1.f);
+		Color blu = new Color(1.f,0.f,0.f);
 		Color wht = new Color(1f, 1f, 1f);
+		Color ylw = new Color(0f, 1f, 1f);
 //		fos.write(b, 0, 54);
 //		ByteArrayInputStream bais = new ByteArrayInputStream
 //		for(int y = 0; y < h; y++) {
@@ -81,24 +85,107 @@ public class CellComponentTester {
 		
 //		
 		
-		bmp = new Bitmap(3, 3, 24);
-		Color ylw = new Color(0f, 1.f, 1.f);
-		Color ppl = new Color(1.f, 0.f, 1.f);
-		for(int i = 0; i < 3; i++) {
-			for(int c = 0; c < 3; c++) {
-				if( (i==0 && (c==0 || c == 2)) || (i==2 && (c==0 || c==2))) bmp.write(ylw.toPixel());
-				else bmp.write(ppl.toPixel());
-			}
+//		bmp = new Bitmap(3, 3, 24);
+//		Color ylw = new Color(0f, 1.f, 1.f);
+//		Color ppl = new Color(1.f, 0.f, 1.f);
+//		for(int i = 0; i < 3; i++) {
+//			for(int c = 0; c < 3; c++) {
+//				if( (i==0 && (c==0 || c == 2)) || (i==2 && (c==0 || c==2))) bmp.write(ylw.toPixel());
+//				else bmp.write(ppl.toPixel());
+//			}
+//		}
+//		
+	/**	*/
+		int cW = 14;
+		int cH = 14;
+		GraphManager.setBackGroundColor(new Color(0.1f, 0.1f, 0.1f));
+		NodeCellComponent ncc1 = new NodeCellComponent(cW,cH,"blank", new Color(0f, 0.0f, 1f)); //red
+		NodeCellComponent ncc2 = new NodeCellComponent(cW,cH,"blank", new Color(0f, 1f, 0f)); // green
+		NodeCellComponent ncc3 = new NodeCellComponent(cW,cH,"blank", new Color(1f, 0f, 0f)); //blue
+		NodeCellComponent ncc4 = new NodeCellComponent(cW,cH,"blank", new Color(1f, 0f, 1f)); // magenta
+		NodeCellComponent ncc5 = new NodeCellComponent(cW,cH,"blank", new Color(1f, 1f, 0.5f)); // light blue
+		NodeCellComponent ncc6 = new NodeCellComponent(cW,cH,"blank", new Color(0f, 1f, 1f)); // yellow
+		
+		
+		PathCellComponent.setGlobalXChannels(3); PathCellComponent.setGlobalYChannels(3);
+		PathCellComponent pcc = new PathCellComponent(cW, cH);
+		
+		PathInstance[] up = pcc.getPathByDirection(Direction.UP);
+		PathInstance[] right = pcc.getPathByDirection(Direction.RIGHT);
+		PathInstance[] left = pcc.getPathByDirection(Direction.LEFT);
+		PathInstance[] down = pcc.getPathByDirection(Direction.DOWN);
+		
+		PathInstance upleft = new PathInstance(ncc1);
+		PathInstance upright = new PathInstance(ncc2);
+		PathInstance downup = new PathInstance(ncc3);
+		PathInstance leftdown = new PathInstance(ncc4);
+		PathInstance rightleft = new PathInstance(ncc5);
+		PathInstance downright = new PathInstance(ncc6);
+		
+		up[0] = upright;
+		up[1] = downup;
+		up[2] = upleft;
+		left[0] = upleft;
+		left[1] = leftdown;
+		left[2] = rightleft;
+		down[0] = leftdown;
+		down[1] = downup;
+		down[2] = downright;
+		right[0] = downright;
+		right[1] = upright;
+		right[2] = rightleft;
+		
+		
+				
+		EmptyCellComponent ecc = new EmptyCellComponent(cW, cH, ylw);
+		NodeCellComponent ncc = new NodeCellComponent(cW,cH,"blank", blu);
+		Bitmap bmp = new Bitmap(cW*9,cH, 24);
+//		Bitmap bmp = new Bitmap(14, 14, 24);
+		ByteGenerator en = ecc.generator();
+		ByteGenerator gn = ncc.generator();
+		ByteGenerator[] qn = {ncc1.generator(), ncc2.generator(), ncc3.generator(), ncc4.generator(), ncc5.generator(), ncc6.generator() };
+		ByteGenerator pn = pcc.generator();
+		System.out.println(bmp.size() + " " + bmp.padSize());
+		byte[] b;
+		byte[] e;
+		byte[] p;
+		int i = 1;
+		boolean persist = true;
+		while((e=en.yield()) != null && (b=gn.yield())!=null && (p=pn.yield()) != null) {
+			i++;
+			bmp.write(e);
+			bmp.write(b);
+			bmp.write(p);
+			Arrays.stream(qn).forEach(q -> bmp.write(q.yield()));
+//			System.out.println(i + " y " + e.length + " empty " + b.length + " path + " + p.length);
 		}
 		
+		System.out.println(bmp.isFull());
+		System.out.println(bmp.writtenPercentAsString());
+		System.out.println(bmp.padSize());
 		
+		/**
+		Bitmap bmp = new Bitmap(200,200,24);
+		for(int y = 0; y < 200; y++) {
+			for(int x = 0; x < 200; x++) {
+				if(x > y) {
+					bmp.write(wht.toPixel());
+				} else {
+					bmp.write(blu.toPixel());
+				}
+			}
+		}
+		*/
+//		PathCellComponent pcc = new PathCellComponent(w, h, h, h)
+//		Bitmap bmp = new Bitmap()
+//		System.out.println(bmp.padSize());
 		
-		BufferedImage img = ImageIO.read(new DataInputStream(new ByteArrayInputStream(bmp.getBitmap(), 0, bmp.size())));
+//		BufferedImage img = ImageIO.read(new DataInputStream(new ByteArrayInputStream(bmp.getBitmap(), 0, bmp.size())));
 		
 		FileOutputStream fos = new FileOutputStream(new File("test.bmp"));
 		fos.write(bmp.getBitmap(), 0, bmp.size());
 		
-		ImageIO.write(img, "png" , new File("test.png"));
+//		ImageIO.write(img, "png" , new File("test.png"));
 		
 //		fos.flush();
 //		fos.close();

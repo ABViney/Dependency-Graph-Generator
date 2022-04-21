@@ -26,8 +26,9 @@ public class Bitmap {
 	public Bitmap(int w, int h, int bitDepth) {
 		this.width = w;
 		this.height = h;
-		this.paddingSize = ( 4 - ( width * (bitDepth/8) % 4 ) % 4 );
-		this.fileSize = 0x36+width*height*(bitDepth/8)+paddingSize*height;
+//		this.paddingSize = ( 4 - ( width * (bitDepth/8) % 4 ) % 4); // No clue why this was written this way
+		this.paddingSize = 4-(width * (bitDepth/8) % 4)%4;
+		this.fileSize = 0x36+(width*height*(bitDepth/8)+(paddingSize*height));
 		this.rowLength = w * (bitDepth/8);
 		
 		this.buffer = new byte[fileSize];
@@ -71,19 +72,21 @@ public class Bitmap {
 	}
 	
 	/**
-	 * Unsafe write operation to paste the paremeter byte array into this
+	 * Unsafe write operation to paste the parameter byte array into this
 	 * Bitmap's buffer.
 	 * 
 	 * @param b
+	 * @return true if byte array is not null
 	 */
-	public void write(byte[] b) {
+	public boolean write(byte[] b) {
+		if(b == null) return false;
 		for(byte info : b) {
 			buffer[cursor++] = info;
-			if((cursor-54-(paddingSize*yIndex)) % rowLength == 0) { System.out.println("Cursor at: " + cursor);
+			if((cursor-54-(paddingSize*yIndex)) % rowLength == 0) {
 				cursor += paddingSize;
 				++yIndex;
 			}
-		}
+		} return true;
 	}
 	
 	public byte[] getBitmap() { return buffer; }
@@ -92,7 +95,7 @@ public class Bitmap {
 	 * Check if this Bitmap is complete.
 	 * @return - true if buffer is full
 	 */
-	public boolean isFull() { return cursor == buffer.length-54; }
+	public boolean isFull() { return cursor == fileSize; }
 	public int imageWidth() { return width; }
 	public int imageHeight() { return height; }
 	/**
@@ -100,8 +103,9 @@ public class Bitmap {
 	 * @return
 	 */
 	public int size() { return fileSize; }
-	
+	public int cursorPos() { return cursor; }
 	public float writtenPercent() { return cursor/fileSize; }
-	
+	public String writtenPercentAsString() { return String.format("%d/%d", cursor, fileSize); }
+	public int padSize() { return paddingSize; }
 	
 }

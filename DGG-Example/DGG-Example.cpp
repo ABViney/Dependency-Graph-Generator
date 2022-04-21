@@ -1,5 +1,6 @@
 #include <iostream>
 #include "include/SimplerObject.hpp"
+#include "include/SimpleObject.h"
 
 int main() {
     SimpleObject s1 = SimpleObject(2);

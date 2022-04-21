@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import com.collections.DependencyLayers;
 import com.collections.DependencyTree;
 import com.collections.FileTree;
+import com.directional.Vec2;
 import com.record.AbstractRecord;
 import com.record.FauxRecord;
 import com.record.PatternSet;
@@ -110,6 +111,9 @@ public class RunSelection {
 	}
 	
 	public TBoxPathing getPathInfo() { return pathInfo; }
+	public DependencyTree<? extends AbstractRecord> getDependencyTree() { return fullTree; }
+	
+	public GraphManager getGraphManager() { return gm; }
 	
 //	private static void debugFunc(DependencyTree<Record> dt, DependencyTree<AbstractRecord> adt, Predicate<? super Record> filter) {
 //		System.out.println("Initial Tree");

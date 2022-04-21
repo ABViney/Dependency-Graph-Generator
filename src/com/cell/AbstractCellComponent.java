@@ -1,6 +1,7 @@
 package com.cell;
 
-import com.util.Generator;
+import com.util.ByteGenerator;
+import com.vindig.image.Color;
 
 /**
  * Building blocks of graph visualization.
@@ -32,6 +33,6 @@ public abstract class AbstractCellComponent {
 	 * @return - Generator<Byte[]>
 	 * @see com.util.Generator.java
 	 */
-	public abstract Generator<Byte[]> generator();
+	public abstract ByteGenerator generator();
 
 }

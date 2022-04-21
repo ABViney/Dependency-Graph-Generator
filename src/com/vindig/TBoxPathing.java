@@ -196,7 +196,8 @@ public class TBoxPathing {
 	public int fieldHeight() { return field.length; }
 	
 	/**
-	 * Gets the x and y axis intersections of every path generated in this instance.
+	 * Gets the x and y axis intersections of every path generated in this instance
+	 * and evaluates the maximum amount of intercepts that can occur along each axis.
 	 * @return int[] {xOverlaps, yOverlaps }
 	 */
 	public int[] measureOccupancy() {

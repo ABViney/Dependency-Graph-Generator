@@ -1,10 +1,13 @@
 package com.vindig.manager;
 
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.collections.DependencyTree;
 import com.record.AbstractRecord;
 import com.vindig.TBoxPathing;
+import com.vindig.image.Bitmap;
 import com.vindig.image.Color;
 
 /**
@@ -15,9 +18,11 @@ import com.vindig.image.Color;
  */
 public class GraphManager { // TODO verify boxing/unboxing performance in generator instances
 	
-	private static int BIT_DEPTH = 8; // Default - Low res color pallette, no alpha channel
+	private static int BIT_DEPTH = 24; // Default - no alpha
 	
 	private static Color backgroundColor = new Color(1.f, 1.f, 1.f);
+	
+	private CellSheet cs;
 	
 	private int xOverlaps;
 	private int yOverlaps;
@@ -27,15 +32,25 @@ public class GraphManager { // TODO verify boxing/unboxing performance in genera
 //	private CellSheet cs;
 	
 	
-	public GraphManager(DependencyTree<? extends AbstractRecord> adt, Function<? extends AbstractRecord, String> definition, TBoxPathing tbp) {
+	public GraphManager(DependencyTree<? extends AbstractRecord> adt, Function<AbstractRecord, String> definition, TBoxPathing tbp) {
 		int[] maxOverlaps = tbp.measureOccupancy();
 		xOverlaps = maxOverlaps[0];
 		yOverlaps = maxOverlaps[1];
-//		cs = new CellSheet(tbp.fieldWidth(), tbp.fieldHeight(), maxOverlaps[0], maxOverlaps[1]);
+		cs = new CellSheet(adt,
+				definition,
+				tbp.getField(),
+				tbp.getPathMap().values().stream().flatMap(Set::stream).collect(Collectors.toSet()),
+				maxOverlaps[0],
+				maxOverlaps[1]);
 		
 	}
 	
 	public static int getBitDepth() { return BIT_DEPTH; }
 	public static Color getBackgroundColor() { return backgroundColor; }
+	public static void setBackGroundColor(Color newColor) { backgroundColor = newColor; }
+	
+	public Bitmap createBitmap() {
+		return cs.toBMP();
+	}
 	
 }

@@ -1,28 +1,34 @@
 package com.cell;
 
-import com.util.Generator;
+import com.util.ByteGenerator;
 import com.vindig.image.Color;
+import com.vindig.manager.GraphManager;
 
 public class EmptyCellComponent extends AbstractCellComponent {
 	
-	Color backgroundColor;
+	Color backgroundColor = GraphManager.getBackgroundColor();
 	
 	public EmptyCellComponent(int w, int h) {
 		super(w, h);
 		// TODO Auto-generated constructor stub
 	}
 	
+	public EmptyCellComponent(int w, int h, Color backgroundColor) {
+		super(w, h);
+		this.backgroundColor = backgroundColor;
+	}
+	
 	public void setBackgroundColor(Color newColor) { backgroundColor = newColor; }
 
 	@Override
-	public Generator<Byte[]> generator() {
-		return new Generator<Byte[]>() {
+	public ByteGenerator generator() {
+		return new ByteGenerator() {
 			
 			private int index = 0;
 			private byte[] pixelData = backgroundColor.toPixel();
 			private int incr = EmptyCellComponent.super.getWidth() * pixelData.length;
 			
-			Byte[] buffer = new Byte[incr];
+			byte[] buffer = new byte[incr];
 			
 			private int totalBytes = incr * EmptyCellComponent.super.getHeight();
 			
@@ -33,10 +39,10 @@ public class EmptyCellComponent extends AbstractCellComponent {
 			}
 			
 			@Override
-			public Byte[] yield() {
+			public byte[] yield() {
 				if(index >= totalBytes) return null;
 				for(int i = 0; i < incr; i++)
-					buffer[index++%incr] = Byte.valueOf(pixelData[i%pixelData.length]);
+					buffer[i] = pixelData[index++%pixelData.length];
 				return buffer;
 			}
 		};
