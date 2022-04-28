@@ -1,5 +1,7 @@
 package com.vindig.manager;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,7 +22,7 @@ public class GraphManager { // TODO verify boxing/unboxing performance in genera
 	
 	private static int BIT_DEPTH = 24; // Default - no alpha
 	
-	private static Color backgroundColor = new Color(1.f, 1.f, 1.f);
+	private static Color backgroundColor = new Color(1.f, 1.f, 1.f, 1.f);
 	
 	private CellSheet cs;
 	
@@ -34,23 +36,27 @@ public class GraphManager { // TODO verify boxing/unboxing performance in genera
 	
 	public GraphManager(DependencyTree<? extends AbstractRecord> adt, Function<AbstractRecord, String> definition, TBoxPathing tbp) {
 		int[] maxOverlaps = tbp.measureOccupancy();
-		xOverlaps = maxOverlaps[0];
-		yOverlaps = maxOverlaps[1];
+		xOverlaps = maxOverlaps[0]+1;
+		yOverlaps = maxOverlaps[1]+1;
 		cs = new CellSheet(adt,
 				definition,
 				tbp.getField(),
 				tbp.getPathMap().values().stream().flatMap(Set::stream).collect(Collectors.toSet()),
-				maxOverlaps[0],
-				maxOverlaps[1]);
-		
+				yOverlaps,
+				xOverlaps);
+		System.out.println(String.format("XOverlaps: %d  YOverlaps: %d", maxOverlaps[0], maxOverlaps[1]));
 	}
 	
 	public static int getBitDepth() { return BIT_DEPTH; }
 	public static Color getBackgroundColor() { return backgroundColor; }
 	public static void setBackGroundColor(Color newColor) { backgroundColor = newColor; }
 	
-	public Bitmap createBitmap() {
+//	public Bitmap createBitmap() {
+	public Bitmap createBitmap() throws IOException {
 		return cs.toBMP();
+	}
+	public File createPNG(String outputDest) {
+		return cs.toPNG(outputDest);
 	}
 	
 }

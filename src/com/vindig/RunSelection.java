@@ -95,7 +95,8 @@ public class RunSelection {
 			}
 		}
 		
-		DependencyLayers dl = new DependencyLayers(adt.get(dt.get(dt.findRoot(rootFilter))), ar.stream().map(r -> adt.get(r)).toList()); System.out.println("Layer stack created");
+		int maxDepth = 0; // ar = new ArrayList<>(); // TODO don't leave this in
+		DependencyLayers dl = new DependencyLayers(adt.get(dt.get(dt.findRoot(rootFilter))), ar.stream().map(r -> adt.get(r)).toList(), maxDepth); System.out.println("Layer stack created");
 //		dl.getAside().getSet().forEach(p -> System.out.println(adt.get(p).getName())); // Print FauxRecords
 //		DependencyLayers dl = new DependencyLayers(dt.findRoot(rootFilter)); System.out.println("Layer stack created");
 //		printLayers(dl, adt);

@@ -33,6 +33,8 @@ public class Vec2 {
 		return x == o.x && y == o.y;
 	}
 	
+	public String toString() { return String.format("{%d, %d}", x, y); }
+	
 	/**
 	 * Perform an addition operation from one Vec2 to another.
 	 * Passes the result into a new Vec2

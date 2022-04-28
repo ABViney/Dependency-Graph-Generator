@@ -11,7 +11,7 @@ public class Bitmap {
 	private final int rowLength;
 	
 	private final byte[] buffer;
-	
+
 	private int cursor = 0x36;
 	private int yIndex = 0;
 	
@@ -24,10 +24,11 @@ public class Bitmap {
 	 * @param bitDepth
 	 */
 	public Bitmap(int w, int h, int bitDepth) {
+		System.out.println("Creating bitmap:\nWidth: " +w +" Height: " + h+ " BitDepth: " + bitDepth);
 		this.width = w;
 		this.height = h;
 //		this.paddingSize = ( 4 - ( width * (bitDepth/8) % 4 ) % 4); // No clue why this was written this way
-		this.paddingSize = 4-(width * (bitDepth/8) % 4)%4;
+		this.paddingSize = ((width*(bitDepth/8) % 4 == 0)) ? 0 : 4-(width * (bitDepth/8) % 4)%4;
 		this.fileSize = 0x36+(width*height*(bitDepth/8)+(paddingSize*height));
 		this.rowLength = w * (bitDepth/8);
 		
@@ -88,6 +89,7 @@ public class Bitmap {
 			}
 		} return true;
 	}
+	
 	
 	public byte[] getBitmap() { return buffer; }
 	

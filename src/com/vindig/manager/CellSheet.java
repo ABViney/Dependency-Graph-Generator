@@ -1,11 +1,13 @@
 package com.vindig.manager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import com.cell.AbstractCellComponent;
 import com.cell.EmptyCellComponent;
@@ -19,6 +21,7 @@ import com.record.AbstractRecord;
 import com.util.ByteGenerator;
 import com.vindig.image.Bitmap;
 import com.vindig.image.Color;
+import com.vindig.image.PNG;
 
 /**
  * Manages CellComponent generation and allocation.
@@ -39,6 +42,9 @@ public class CellSheet {
 	static int defaultCellWidth = 1;
 	static int defaultCellHeight = 1;
 	
+	static IntFunction<Integer> resize = (i -> (i*4)+2);
+	static double nodeBuffer = 1/20;
+	
 	// TODO maybe add a scale function --e.g. IntFunc(i -> 2*i + 1)
 	
 	private AbstractCellComponent[][] layout;
@@ -56,19 +62,25 @@ public class CellSheet {
 		PathCellComponent.setGlobalXChannels(this.availableXChannels = cellHeight); // y axis intersections 
 		PathCellComponent.setGlobalYChannels(this.availableYChannels = cellWidth); // x axis intersections
 		
-		CellSheet.defaultCellWidth = availableXChannels*4+2;
-		CellSheet.defaultCellHeight = availableYChannels*4+2;
+		
+		
+		CellSheet.defaultCellWidth = resize.apply(availableYChannels);//*4+2;
+		CellSheet.defaultCellHeight = resize.apply(availableXChannels);//*4+2;
+		
+		System.out.println(String.format("Cell{Width: %d  Height: %d}", defaultCellWidth, defaultCellHeight));
 		
 		this.layout = new AbstractCellComponent[field.length][field[0].length];
 		this.nodeComponents = new ArrayList<>();
 		this.empty = new EmptyCellComponent(defaultCellWidth, defaultCellHeight);
 		
 		/** Assign NodeCells */
-		Random r = new Random();
+		Random r = new Random(12);
 		for(int i = 0; i < field.length; i++) {
 			for(int c = 0; c < field[0].length; c++) {
 				if(field[i][c] instanceof Pos) {
-					NodeCellComponent newNode =  new NodeCellComponent(defaultCellWidth, defaultCellHeight, definition.apply(adt.get(field[i][c])), new Color(r.nextFloat(), r.nextFloat(), r.nextFloat()));
+					NodeCellComponent newNode =  new NodeCellComponent(defaultCellWidth, defaultCellHeight, definition.apply(adt.get(field[i][c])), new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 1.f));
+					if(newNode.getNodeTitle().contains("main"))
+						newNode.setColor(new Color(0.f,0.f,0.f,1.f));
 					layout[i][c] = newNode; // TODO generate n-length queue of colors to pop out to each new node
 					nodeComponents.add(newNode);
 				}
@@ -85,6 +97,9 @@ public class CellSheet {
 		}
 	}
 	
+	public static IntFunction<Integer> getResize() { return resize; }
+	public static double getNodeBuffer() { return nodeBuffer; }
+	
 	/**
 	 * Get the number of units this CellSheet spans
 	 * @return int
@@ -93,7 +108,7 @@ public class CellSheet {
 	
 	public Bitmap toBMP() {
 		Bitmap bmp = new Bitmap(defaultCellWidth*layout[0].length, defaultCellHeight*layout.length, GraphManager.getBitDepth());
-		for(int i = layout.length-1; i >= 0; i--) {
+		for(int i = 0; i < layout.length; i++) {//int i = layout.length-1; i >= 0; i--) {
 			ByteGenerator[] cg = Arrays.stream(layout[i]).map(c -> c.generator()).toArray(ByteGenerator[]::new);
 			boolean valid = true;
 			while(valid) {
@@ -104,6 +119,26 @@ public class CellSheet {
 					}
 				}
 			}
-		} return bmp;
+		}  return bmp;
 	}
+	
+	public File toPNG(String outputDest) {
+		File output = new File(outputDest);
+		PNG png = new PNG(defaultCellWidth*layout[0].length, defaultCellHeight*layout.length, output);
+		int row = 1;
+		for(int i = layout.length-1; i>= 0; i--) {
+			System.out.println("Working on row " + row++ + "/" + layout.length);
+			ByteGenerator[] cg = Arrays.stream(layout[i]).map(c -> c.generator()).toArray(ByteGenerator[]::new);
+			boolean valid = true;
+			while(valid) {
+				for(ByteGenerator g : cg) {
+					if(!png.write(g.yield())) {
+						valid = false;
+						break;
+					}
+				}
+			}
+		} return output;
+	}
+	
 }

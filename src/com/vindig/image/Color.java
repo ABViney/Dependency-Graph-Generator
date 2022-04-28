@@ -2,11 +2,12 @@ package com.vindig.image;
 
 public class Color {
 	
-	public static int BIT_24 = 24; // TODO consider implementation for lower scale mapping so a user can design the graph depiction
+	public static final float OPAQUE = 1.f;
+	public static final float TRANSPARENT = 0.f;
 	
-	private float r, g, b;
+	private float r, g, b, a;
 	
-	private int range = 255;
+	private final int range = 255;
 	
 	/**
 	 * Fabricate a color using float ranges.
@@ -15,10 +16,11 @@ public class Color {
 	 * @param green
 	 * @param blue
 	 */
-	public Color(float r, float g, float b) {
+	public Color(float r, float g, float b, float a) {
 		this.r = r;
 		this.g = g;
 		this.b = b;
+		this.a = a;
 	}
 	
 	/**
@@ -28,17 +30,18 @@ public class Color {
 	 * @param g
 	 * @param b
 	 */
-	public Color(byte r, byte g, byte b) {
+	public Color(byte r, byte g, byte b, byte a) {
 		this.r = r/range;
 		this.g = g/range;
 		this.b = b/range;
+		this.a = a/range;
 	}
 	
 	/**
 	 * Writes this color to a byte array.
 	 * @return byte[]
 	 */
-	public byte[] toPixel() { return new byte[] {(byte)(r*range), (byte)(g*range), (byte)(b*range)}; }
+	public byte[] toPixel() { return new byte[] {(byte)(r*range), (byte)(g*range), (byte)(b*range), (byte)(a*range)}; }
 	
 	/**
 	 * Set this Color's rgb values
@@ -71,8 +74,8 @@ public class Color {
 	 * @param b
 	 * @return
 	 */
-	public static Color getColor(float r, float g, float b) {
-		return new Color(r, g, b);
+	public static Color getColor(float r, float g, float b, float a) {
+		return new Color(r, g, b, a);
 	}
 	
 	/**
@@ -82,8 +85,8 @@ public class Color {
 	 * @param b
 	 * @return
 	 */
-	public static Color getColor(byte r, byte g, byte b) {
-		return new Color(r, g, b);
+	public static Color getColor(byte r, byte g, byte b, byte a) {
+		return new Color(r, g, b, a);
 	}
 	
 }

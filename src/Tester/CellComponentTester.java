@@ -13,6 +13,7 @@ import com.directional.Direction;
 import com.util.ByteGenerator;
 import com.vindig.image.Bitmap;
 import com.vindig.image.Color;
+import com.vindig.image.PNG;
 import com.vindig.manager.GraphManager;
 
 public class CellComponentTester {
@@ -109,60 +110,73 @@ public class CellComponentTester {
 		
 		PathCellComponent.setGlobalXChannels(3); PathCellComponent.setGlobalYChannels(3);
 		PathCellComponent pcc = new PathCellComponent(cW, cH);
+		PathCellComponent pcc2 = new PathCellComponent(cW, cH);
+		pcc.createBond(pcc2, Direction.RIGHT);
 		
 		PathInstance[] up = pcc.getPathByDirection(Direction.UP);
 		PathInstance[] right = pcc.getPathByDirection(Direction.RIGHT);
-		PathInstance[] left = pcc.getPathByDirection(Direction.LEFT);
-		PathInstance[] down = pcc.getPathByDirection(Direction.DOWN);
+//		PathInstance[] left = pcc.getPathByDirection(Direction.LEFT);
+//		PathInstance[] down = pcc.getPathByDirection(Direction.DOWN);
 		
-		PathInstance upleft = new PathInstance(ncc1);
-		PathInstance upright = new PathInstance(ncc2);
-		PathInstance downup = new PathInstance(ncc3);
-		PathInstance leftdown = new PathInstance(ncc4);
-		PathInstance rightleft = new PathInstance(ncc5);
-		PathInstance downright = new PathInstance(ncc6);
+		PathInstance[] up2 = pcc2.getPathByDirection(Direction.UP);
+		PathInstance[] left2 = pcc2.getPathByDirection(Direction.LEFT);
 		
-		up[0] = upright;
-		up[1] = downup;
-		up[2] = upleft;
-		left[0] = upleft;
-		left[1] = leftdown;
-		left[2] = rightleft;
-		down[0] = leftdown;
-		down[1] = downup;
-		down[2] = downright;
-		right[0] = downright;
-		right[1] = upright;
-		right[2] = rightleft;
+//		PathInstance upleft = new PathInstance(ncc1);
+//		PathInstance upright = new PathInstance(ncc2);
+//		PathInstance downup = new PathInstance(ncc3);
+//		PathInstance leftdown = new PathInstance(ncc4);
+//		PathInstance rightleft = new PathInstance(ncc5);
+//		PathInstance downright = new PathInstance(ncc6);
+		
+//		up[0] = upright;
+//		up[1] = downup;
+//		up[2] = upleft;
+//		left[0] = upleft;
+//		left[1] = leftdown;
+//		left[2] = rightleft;
+//		down[0] = leftdown;
+//		down[1] = downup;
+//		down[2] = downright;
+//		right[0] = downright;
+//		right[1] = upright;
+//		right[2] = rightleft;
+		
+		PathInstance pi1 = new PathInstance(ncc1);
+		PathInstance pi2 = new PathInstance(ncc4);
+		PathInstance pi3 = new PathInstance(ncc5);
+		
+		up[0] = right[0] = up2[0] = pi1;
+		up[1] = left2[1] = up2[1] = pi2;
+		up[2] = right[2] = up2[2] = pi3;
 		
 		
-				
 		EmptyCellComponent ecc = new EmptyCellComponent(cW, cH, ylw);
 		NodeCellComponent ncc = new NodeCellComponent(cW,cH,"blank", blu);
-		Bitmap bmp = new Bitmap(cW*9,cH, 24);
+//		Bitmap bmp = new Bitmap(cW*9,cH, 24);
+		PNG png = new PNG(cW*9, cH, 24, new File("pngOutputTest.png"));
 //		Bitmap bmp = new Bitmap(14, 14, 24);
 		ByteGenerator en = ecc.generator();
 		ByteGenerator gn = ncc.generator();
-		ByteGenerator[] qn = {ncc1.generator(), ncc2.generator(), ncc3.generator(), ncc4.generator(), ncc5.generator(), ncc6.generator() };
+		ByteGenerator[] qn = {ncc1.generator(), ncc2.generator(), ncc3.generator(), ncc4.generator(), ncc5.generator() };//, ncc6.generator() };
 		ByteGenerator pn = pcc.generator();
-		System.out.println(bmp.size() + " " + bmp.padSize());
+		ByteGenerator pn2 = pcc2.generator();
 		byte[] b;
 		byte[] e;
 		byte[] p;
-		int i = 1;
+		byte[] p2;
 		boolean persist = true;
 		while((e=en.yield()) != null && (b=gn.yield())!=null && (p=pn.yield()) != null) {
-			i++;
-			bmp.write(e);
-			bmp.write(b);
-			bmp.write(p);
-			Arrays.stream(qn).forEach(q -> bmp.write(q.yield()));
+			png.write(e);
+			png.write(b);
+			png.write(p);
+			png.write(p2=pn2.yield());
+			Arrays.stream(qn).forEach(q -> png.write(q.yield()));
 //			System.out.println(i + " y " + e.length + " empty " + b.length + " path + " + p.length);
 		}
 		
-		System.out.println(bmp.isFull());
-		System.out.println(bmp.writtenPercentAsString());
-		System.out.println(bmp.padSize());
+//		System.out.println(bmp.isFull());
+//		System.out.println(bmp.writtenPercentAsString());
+//		System.out.println(bmp.padSize());
 		
 		/**
 		Bitmap bmp = new Bitmap(200,200,24);
@@ -182,8 +196,8 @@ public class CellComponentTester {
 		
 //		BufferedImage img = ImageIO.read(new DataInputStream(new ByteArrayInputStream(bmp.getBitmap(), 0, bmp.size())));
 		
-		FileOutputStream fos = new FileOutputStream(new File("test.bmp"));
-		fos.write(bmp.getBitmap(), 0, bmp.size());
+//		FileOutputStream fos = new FileOutputStream(new File("test.bmp"));
+//		fos.write(bmp.getBitmap(), 0, bmp.size());
 		
 //		ImageIO.write(img, "png" , new File("test.png"));
 		

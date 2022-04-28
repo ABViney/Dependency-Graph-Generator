@@ -1,24 +1,23 @@
 package Tester;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 
-import com.collections.DependencyTree;
-import com.collections.DependencyTree.Pos;
+import javax.imageio.ImageIO;
+
 import com.collections.FileTree;
-import com.directional.Vec2;
-import com.record.AbstractRecord;
 import com.record.PatternSet;
 import com.record.Record;
 import com.vindig.RunSelection;
 import com.vindig.TBoxPathing;
+import com.vindig.image.Bitmap;
 import com.vindig.manager.GraphManager;
 
 public class RunSelectionTester {
@@ -53,6 +52,8 @@ public class RunSelectionTester {
 //		}
 		FileTree ft = new FileTree(new File("DGG-Example"));
 //		FileTree ft = new FileTree(new File("Cortex-Command-Community-Project-Source"));
+//		FileTree ft = new FileTree(new File("/home/viney/Downloads/Cortex-Command-Community-Project-Source"));
+//		FileTree ft = new FileTree(new File("/home/viney/Downloads/AngryGL"));
 		File[] disableList = Arrays.stream(ft.getFileList()).filter(f -> !f.getName().matches(".*\\.(h.{0,2}|c.{1,2}?)$")).toArray(size -> new File[size]);
 		Arrays.stream(disableList).forEach(f -> ft.disable(f.getPath()));
 		
@@ -68,14 +69,21 @@ public class RunSelectionTester {
 		 */
 		Predicate<Record> filter = r -> r.getName().equals("DGG-Example.cpp");
 //		Predicate<Record> filter = r->r.getName().equals("Main.cpp");
+//		Predicate<Record> filter = r -> r.getName().equals("main.cc");
 		System.out.println("instantiating");
 		RunSelection result = RunSelection.instantiateUsing(ft, filter, ps, excludes);
 		TBoxPathing tbp = result.getPathInfo();
 		GraphManager gm = result.getGraphManager();
 		System.out.println("Writing output");
-		FileOutputStream fos = new FileOutputStream(new File("runOutput.bmp"));
-		fos.write(gm.createBitmap().getBitmap());
-		fos.close();
+//		FileOutputStream fos = new FileOutputStream(new File("runOutput.bmp"));
+//		gm.createBitmap("runOutput.bmp");
+//		FileOutputStream fos = new FileOutputStream(new File("DGG-Example.bmp"));
+//		FileOutputStream fos = new FileOutputStream(new File("AngryGl.bmp"));
+//		fos.write(gm.createBitmap().getBitmap());
+		gm.createPNG("DGG-Example.png");
+//		gm.createPNG("AngryGLMap.png");
+//		gm.createPNG("CortexCommandMap.png");
+		
 		
 		/**
 		 * This is the collection of block path data that is generated upon initialization of the TBoxPathing class. Vec2 is a simple x,y coordinate collection with

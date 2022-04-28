@@ -1,9 +1,12 @@
 package com.collections;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -28,6 +31,7 @@ public class DependencyLayers { //TODO make aside layer that can be interpretted
 	private LayerSet topLayer;
 	private LayerSet aside = new LayerSet();
 	private int depth = 1;
+	private int maxDepth = 0;
 	
 	public DependencyLayers(Pos root) {
 		if(root == null || root.getDependencies().size() == 0) return;
@@ -37,6 +41,13 @@ public class DependencyLayers { //TODO make aside layer that can be interpretted
 	public DependencyLayers(Pos root, List<Pos> asideContent) {
 		if(root == null || root.getDependencies().size() == 0) return;
 		aside.addAll(asideContent);
+		generateLayerHierarchy(root);
+	}
+	
+	public DependencyLayers(Pos root, List<Pos> asideContent, int maxDepth) {
+		if(root == null || root.getDependencies().size() == 0) return;
+		aside.addAll(asideContent);
+		this.maxDepth = maxDepth;
 		generateLayerHierarchy(root);
 	}
 	
@@ -94,22 +105,59 @@ public class DependencyLayers { //TODO make aside layer that can be interpretted
 	 * hierarchy of the passed tree.
 	 * @param root
 	 */
+//	private void generateLayerHierarchy(Pos root) {
+//		LayerSet curLayer = new LayerSet(root);
+//		topLayer = curLayer;
+//		Set<Pos> spent = new LinkedHashSet<>(aside.getSet());
+//		
+//		Predicate<Pos> itrFilter = c -> !spent.contains(c);
+//		Set<Pos> nextItr = new LinkedHashSet<>(root.getDependencies().stream().filter(itrFilter).toList());
+//		spent.add(root);
+//		while(!nextItr.isEmpty()) {
+//			Set<Pos> curItr = nextItr;
+//			nextItr = new LinkedHashSet<>();
+//			curLayer = new LayerSet(curLayer, curItr);
+//			depth++;
+//			for(Pos p : curItr) {
+//				nextItr.addAll(p.getDependencies().stream().filter(itrFilter).toList());
+//				spent.addAll(curItr);
+//			}
+//		}
+//	}
 	private void generateLayerHierarchy(Pos root) {
 		LayerSet curLayer = new LayerSet(root);
 		topLayer = curLayer;
 		Set<Pos> spent = new LinkedHashSet<>(aside.getSet());
 		
+		Map<Pos, Boolean> asidePresence = new HashMap<>();
+		aside.getSet().stream().forEach(e -> asidePresence.put(e, false));
+		for(Pos d : root.getDependencies()) {
+			if(asidePresence.containsKey(d)) {
+				asidePresence.put(d, true);
+			}
+		}
+		
 		Predicate<Pos> itrFilter = c -> !spent.contains(c);
 		Set<Pos> nextItr = new LinkedHashSet<>(root.getDependencies().stream().filter(itrFilter).toList());
 		spent.add(root);
-		while(!nextItr.isEmpty()) {
+		while(!nextItr.isEmpty() && depth != maxDepth) {
 			Set<Pos> curItr = nextItr;
 			nextItr = new LinkedHashSet<>();
 			curLayer = new LayerSet(curLayer, curItr);
 			depth++;
 			for(Pos p : curItr) {
+				for(Pos d : p.getDependencies()) {
+					if(asidePresence.containsKey(d)) {
+						asidePresence.put(d, true);
+					}
+				}
 				nextItr.addAll(p.getDependencies().stream().filter(itrFilter).toList());
 				spent.addAll(curItr);
+			}
+		}
+		for(Entry<Pos, Boolean> aVal : asidePresence.entrySet()) {
+			if(!aVal.getValue()) {
+				aside.getSet().remove(aVal.getKey());
 			}
 		}
 	}

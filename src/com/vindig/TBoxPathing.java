@@ -79,17 +79,18 @@ public class TBoxPathing {
 		}
 		//Set position of layers ordered from top
 		Iterator<LayerSet> itr = dl.iterator(); // map layered pos' vec2s
+		int asideCnt = 0; // TODO
 		for(int y = 0; itr.hasNext(); y+=2) {
 			Iterator<Pos> itr2 = itr.next().getSet().iterator();
 			int x = 1;
 			while(itr2.hasNext()) {
 				Pos p = itr2.next();
 				field[y][xMax-x] = p;
+				if(dl.getAside().getSet().contains(p)) asideCnt++; // TODO
 				posMap.put(p, vecRef[y][xMax-x]);
 				x++;
 			}
 		}
-		
 		boolean isAside = false;
 		boolean sameLayer = false;
 		BiPredicate<Integer[], Integer[]> adjacentSeqBreak = new BiPredicate<>() { // evalute if pathing from start to end is a single vector
@@ -117,6 +118,7 @@ public class TBoxPathing {
 			if(start[0] == 0) continue; // Don't seek from asides
 			Set<List<Vec2>> pathSet = new HashSet<>();
 			for(Pos d : cursor.getDependencies()) {
+				if(!posMap.containsKey(d)) continue;
 				int[] end = posMap.get(d).getOrigin(); // [0] = x, [1] = y
 				isAside = end[0] == 0;
 				sameLayer = !isAside && start[1] == end[1];
@@ -203,25 +205,51 @@ public class TBoxPathing {
 	public int[] measureOccupancy() {
 		int[][] xOverlaps = new int[field.length][field[0].length];
 		int[][] yOverlaps = new int[field.length][field[0].length];
+//		
+//		for(Set<List<Vec2>> pathSet : pathMap.values()) { 
+//			for(List<Vec2> path : pathSet) {
+//				Vec2 start = path.get(0);
+//				int x = start.getX();
+//				int x2 = x;
+//				int y = start.getY();
+//				
+//				for(int i = 1; i < path.size(); i++) {
+//					Vec2 point = path.get(i);
+//					int nextX = point.getX();
+//					int nextY = point.getY();
+//					
+//					if(x != nextX) {
+//						int incr = (x < nextX) ? 1 : -1;
+//						while(x != nextX) xOverlaps[y][x+=incr]++;
+//						xOverlaps[y][x]++;
+//					}
+//					if(y != nextY) {
+//						int incr = (y < nextY) ? 1 : -1;
+//						while(y != nextY) yOverlaps[y+=incr][x2]++;
+//						yOverlaps[y][x2]++;
+//					}
+//				}
+//			}
+//		}
 		
-		for(Set<List<Vec2>> pathSet : pathMap.values()) { 
+		for(Set<List<Vec2>> pathSet : pathMap.values()) {
 			for(List<Vec2> path : pathSet) {
-				Vec2 start = path.get(0);
-				int x = start.getX();
-				int y = start.getY();
-				
-				for(int i = 1; i < path.size(); i++) {
-					Vec2 point = path.get(i);
-					int nextX = point.getX();
-					int nextY = point.getY();
-					
-					if(x != nextX) {
-						int incr = (x < nextX) ? 1 : -1;
-						while(x != nextX) xOverlaps[y][x+=incr]++;
+				for(int i = 0; i < path.size()-1; i++) {
+					Vec2 c1 = path.get(i);
+					Vec2 c2 = path.get(i+1);
+					if(c1.getX() == c2.getX()) {
+						int xStatic = c1.getX();
+						int yIncr = Vec2.fromDirection(c1.directionTo(c2)).getY();
+						for(int y = c1.getY(); y != c2.getY(); y+=yIncr)
+							yOverlaps[y][xStatic]++;
+						yOverlaps[c2.getY()][xStatic]++;
 					}
-					if(y != nextY) {
-						int incr = (y < nextY) ? 1 : -1;
-						while(y != nextY) yOverlaps[y+=incr][x]++;
+					if(c1.getY() == c2.getY()) {
+						int xIncr = Vec2.fromDirection(c1.directionTo(c2)).getX();
+						int yStatic = c1.getY();
+						for(int x = c1.getX(); x != c2.getX(); x+=xIncr)
+							xOverlaps[yStatic][x]++;
+						xOverlaps[yStatic][c2.getX()]++;
 					}
 				}
 			}
@@ -229,7 +257,7 @@ public class TBoxPathing {
 		
 		int xMaxCollisions = Arrays.stream(xOverlaps).flatMapToInt(Arrays::stream).max().getAsInt();
 		int yMaxCollisions = Arrays.stream(yOverlaps).flatMapToInt(Arrays::stream).max().getAsInt();
-		
+		System.out.println("Max X Collisions: " + xMaxCollisions + " Max Y Collisions: " + yMaxCollisions);
 		return new int[] {xMaxCollisions, yMaxCollisions};
 		
 	}
