@@ -100,7 +100,6 @@ public class PathCellComponent extends AbstractCellComponent {
 	
 	@SuppressWarnings("incomplete-switch") //TODO gotta rewrite this, goes out of bounds sometimes somehow, related ~last switch statement setting an intercept pos out of bounds
 	private Color[] mergeScans() { // TODO can be simplified immensely anyways
-
 		Color[][] result = new Color[super.getHeight()][super.getWidth()];
 		Arrays.stream(result).forEach(a -> Arrays.fill(a, GraphManager.getBackgroundColor()));
 		
@@ -111,7 +110,7 @@ public class PathCellComponent extends AbstractCellComponent {
 		PathInstance[] pathFrom;
 		PathInstance[] pathTo;
 		Set<PathInstance> used = new HashSet<>();
-		for(int i = 0; i < 4; i++) {
+		for(int i = 0; i < 3; i++) {
 			switch(i) {
 			case 0:
 				if(up == null) continue;
@@ -128,40 +127,25 @@ public class PathCellComponent extends AbstractCellComponent {
 				from = Direction.DOWN;
 				pathFrom = down;
 				break;
-			case 3:
-				if(left == null) continue;
-				from = Direction.LEFT;
-				pathFrom = left;
-				break;
 			default:
 				return null;
 			}
-			for(int i2 = 0; i2 < 4; i2++) {
-				if(i2 == i) continue;
+			for(int i2 = i; i2 < 3; i2++) {
 				switch(i2) {
 				case 0:
-					if(up == null) continue;
-					to = Direction.UP;
-					pathTo = up;
-//					yIncr = 1;
-					break;
-				case 1:
 					if(right == null) continue;
 					to = Direction.RIGHT;
 					pathTo = right;
-//					xIncr = 1;
 					break;
-				case 2:
+				case 1:
 					if(down == null) continue;
 					to = Direction.DOWN;
 					pathTo = down;
-//					yIncr = -1;
 					break;
-				case 3:
+				case 2:
 					if(left == null) continue;
 					to = Direction.LEFT;
 					pathTo = left;
-//					xIncr = -1;
 					break;
 				default:
 					return null;
@@ -229,59 +213,6 @@ public class PathCellComponent extends AbstractCellComponent {
 				}
 			}
 		}
-//		private Color[] mergeScans() {
-//			Color[][] result = new Color[super.getHeight()][super.getWidth()];
-//			Arrays.stream(result).forEach(a -> Arrays.fill(a, GraphManager.getBackgroundColor()));
-//			IntFunction<Integer> resize = CellSheet.getResize();
-//			Set<PathInstance> used = new HashSet<>();
-//			if(left != null && right != null) {
-//				for(int i = 0; i < left.length; i++) {
-//					if(!(left[i] instanceof PathInstance) || left[i] != right[i]) continue;
-//					int y = result.length - resize.apply(i)-1;
-//					Arrays.fill(result[y], left[i].getColor());
-//					used.add(left[i]);
-//				}
-//			}
-//			if(up != null && down != null) {
-//				for(int i = 0; i < up.length; i++) {
-//					if(!(up[i] instanceof PathInstance) || up[i] != down[i]) continue;
-//					int x = i;
-//					for(int y = 0; y < result.length; y++)
-//						result[y][resize.apply(x)] = up[i].getColor();
-//					used.add(up[i]);
-//				}
-//			}
-//			for(int i = 0; i < 2; i++) {
-//				PathInstance[] xAxis = (i == 0) ? up : down; // xAxis is the up or down channel
-//				if(xAxis == null) continue;
-//				int yIncr = (i == 0) ? 1 : -1; // yIncrement will be -1 or 1
-//				
-//				for(int i2 = 0; i2 < 2; i2++) {
-//					PathInstance[] yAxis = (i2 == 0) ? left : right; // yAxis is the left or right channel
-//					if(yAxis == null) continue;
-//					int xIncr = (i2 == 0) ? -1 : 1; // xIncrement also -1 or 1
-//					
-//					for(int y = 0; y < yAxis.length; y++) {
-//						if(!(yAxis[y] instanceof PathInstance) || used.contains(yAxis[y])) continue;
-//						
-//						for(int x = 0; x < xAxis.length; x++) {
-//							if(!(xAxis[x] instanceof PathInstance) || used.contains(xAxis[x])) continue;
-//							
-//							if(yAxis[y] == xAxis[x]) {
-//								int x1 = resize.apply(x);
-//								int y1 = result.length-resize.apply(y)-1;
-//								
-//								for(int y2 = y1; 0 <= y2 && y2 < yAxis.length; y2+=yIncr)
-//									result[y2][x1] = xAxis[x].getColor();
-//								for(int x2 = x1; 0 <= x2 && x2 < xAxis.length; x2+=xIncr)
-//									result[y1][x2] = yAxis[y].getColor();
-//								used.add(yAxis[y]);
-//								break;
-//							}
-//						}
-//					}
-//				}
-//			} // modded func
 //		for(int i = 0; i < (int)result.length/2; i++) { // TODO I can modify the above method to do this during writing
 //			Color[] swap = result[i];
 //			result[i] = result[result.length-1-i];
@@ -290,72 +221,6 @@ public class PathCellComponent extends AbstractCellComponent {
 		Color[] flattened =  Arrays.stream(result).flatMap(Arrays::stream).toArray(Color[]::new);
 		return flattened;
 	}
-	
-	/**
-
-	private Color[] mergeScans() {
-		Color[][] result = new Color[super.getHeight()][super.getWidth()];
-		Arrays.stream(result).forEach(a -> Arrays.fill(a, GraphManager.getBackgroundColor()));
-		Set<PathInstance> used = new HashSet<>();
-		//Check linear tracks
-		if(up != null && down != null) {
-			for(int x = 0; x < up.length; x++) {
-				if(up[x] instanceof PathInstance && down[x] == up[x]) {
-					for(int y = 0; y < result.length; y++) {
-						result[y][x*4+2] = up[x].getColor();
-					} used.add(up[x]);
-				}
-			}
-		}
-		if(left != null && right != null) {
-			for(int y = 0; y < left.length; y++) {
-				if(left[y] instanceof PathInstance && right[y] == left[y]) {
-					Arrays.fill(result[y*4+2], left[y].getColor());
-				} used.add(left[y]);
-			}
-		}
-		// Remaining checks are 2 parallel cardinals against their 2 perpendiculars
-		for(int i = -1; i < 2; i+=2) {
-			PathInstance[] xAxis = null;
-			switch(i) {
-			case -1:
-				if(up == null) continue;
-				xAxis = up;
-				break;
-			case 1:
-				if(down == null) continue;
-				xAxis = down;
-			}
-			
-			for(int i2 = -1; i2 < 2; i2+=2) {
-				PathInstance[] yAxis = null;
-				switch(i2) {
-				case -1:
-					if(left == null) continue;
-					yAxis = left;
-					break;
-				case 1:
-					if(right == null) continue;
-					yAxis = right;
-				}
-				for(int x = 0; x < xAxis.length; x++) {
-					if(!(xAxis[x] instanceof PathInstance) || used.contains(xAxis[x])) continue;
-					for(int y = 0; y < yAxis.length; y++) {
-						if(yAxis[y] == xAxis[x]) {
-							for(int x2 = x*4+2; 0 <= x2 && x2 < result[0].length; x2-=i)
-								result[y*4+2][x2] = xAxis[x].getColor();
-							for(int y2 = y*4+2; 0 <= y2 && y2 < result.length; y2+=i2) 
-								result[y2][x*4+2] = xAxis[x].getColor();
-							used.add(xAxis[x]);
-							break;
-						}
-					}
-				}
-			}
-		}
-
-
-	 */
 	
 	@Override
 	public ByteGenerator generator() { //TODO Yield function needs to space horizontal occurences
