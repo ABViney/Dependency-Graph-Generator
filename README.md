@@ -21,3 +21,5 @@ Better shows off the beauty of my mapping algorithm. Pretty even without
 
 Limitations at this point are project size specific.
 Nigh-entire reason I begain building this was to break down and understand this repo : https://github.com/cortex-command-community/Cortex-Command-Community-Project-Source -- but at current it is too large to render the entirety of, even for a PNG.
+
+Use isn't exclusive to C/C++, but it is what I'm building it for.
