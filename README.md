@@ -1,7 +1,7 @@
 # Dependency-Graph-Generator
 Work-in-progress
 
-Pending rewriting into not Java
+Pending rewriting into not Java and a better scalable project paradigm
 
 Generate a graph of dependencies leading from program entry point to all included assets
 
